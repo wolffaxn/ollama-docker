@@ -1,0 +1,7 @@
+cache/
+docs/
+functions/
+tools/
+uploads/
+vector_db/
+webui.db
