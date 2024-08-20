@@ -21,19 +21,19 @@ docker network create ollama-net
 To start all containers, run the following command.
 
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
 To start a single container, run the follwing command.
 
 ```sh
-docker-compose up -d [traefik|ollama|ollama-web|qdrant]
+docker compose up -d [traefik|ollama|ollama-web|qdrant]
 ```
 
 To stop all containers, run the following command.
 
 ```sh
-docker-compose down
+docker compose down
 ```
 
 The UIs can be accessed at the following URLs.
