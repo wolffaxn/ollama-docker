@@ -35,8 +35,12 @@ services:
       - ollama-net
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=ollama-net"
+
       - "traefik.http.routers.ollama.rule=Host(`ollama.localhost`)"
-      - "traefik.http.services.ollama.loadbalancer.server.port=80"
+      - "traefik.http.routers.ollama.entrypoints=web"
+      - "traefik.http.routers.ollama.service=ollama"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
 
   ollama-web:
     image: ghcr.io/open-webui/open-webui:main
@@ -59,8 +63,12 @@ services:
       - ollama-net
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=ollama-net"
+
       - "traefik.http.routers.ollama-web.rule=Host(`ollama-web.localhost`)"
-      - "traefik.http.services.ollama-web.loadbalancer.server.port=80"
+      - "traefik.http.routers.ollama-web.entrypoints=web"
+      - "traefik.http.routers.ollama-web.service=ollama-web"
+      - "traefik.http.services.ollama-web.loadbalancer.server.port=8080"
 
   qdrant:
     image: docker.io/qdrant/qdrant:v1.11.0
@@ -76,8 +84,12 @@ services:
       - ollama-net
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=ollama-net"
+
       - "traefik.http.routers.qdrant.rule=Host(`qdrant.localhost`)"
-      - "traefik.http.services.qdrant.loadbalancer.server.port=80"
+      - "traefik.http.routers.qdrant.entrypoints=web"
+      - "traefik.http.routers.qdrant.service=qdrant"
+      - "traefik.http.services.qdrant.loadbalancer.server.port=6333"
 
 networks:
   ollama-net:
