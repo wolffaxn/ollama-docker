@@ -1,0 +1,9 @@
+llama-index
+llama-index-embeddings-ollama
+llama-index-llms-ollama
+llama-index-packs-node-parser
+llama-index-core
+llama-index-vector-stores-qdrant
+ollama
+python-dotenv
+qdrant_client
