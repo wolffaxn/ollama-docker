@@ -1,9 +1,8 @@
-llama-index
-llama-index-embeddings-ollama
-llama-index-llms-ollama
-llama-index-packs-node-parser
-llama-index-core
-llama-index-vector-stores-qdrant
-ollama
-python-dotenv
-qdrant_client
+llama-index==0.11.1
+llama-index-core==0.11.1
+llama-index-embeddings-ollama==0.3.0
+llama-index-llms-ollama==0.3.0
+llama-index-vector-stores-qdrant==0.3.0
+ollama==0.3.1
+python-dotenv==1.0.1
+qdrant_client==1.11.1
