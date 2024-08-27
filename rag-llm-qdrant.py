@@ -24,78 +24,88 @@ logging.basicConfig(
 
 load_dotenv()
 
-class RAG:
-    def ingest(self):
-        documents = SimpleDirectoryReader(os.environ.get("DOCS_PATH")).load_data()
-        logging.info("%s pages(s) found", len(documents))
+def ingest():
 
-        # split the documents into small chunks
-        chunk_size=os.environ.get("CHUNK_SIZE")
+    # read in PDF documents from filesystem using SimpleDirectoryReader
+    reader = SimpleDirectoryReader(
+        input_dir=os.environ.get("DOCS_PATH"),
+        recursive=True,
+        required_exts=[".pdf"]
+    )
+    documents = reader.load_data()
+    logging.info("%s pages(s) found", len(documents))
+
+    splitter = SentenceSplitter(
+        chunk_size=os.environ.get("CHUNK_SIZE"),
         chunk_overlap=os.environ.get("CHUNK_OVERLAP")
-        text_parser = SentenceSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap
+    )
+
+    # create chunks from all document pages
+    chunks = []
+    chunks_with_page = []
+    for page_no, page in enumerate(documents):
+        chunk = splitter.split_text(page.text)
+        chunks.extend(chunk)
+        chunks_with_page.extend([page_no] * len(chunk))
+
+        logging.info(
+            "Splitting page %s into %s chunks (chunk_size=%s, chunk_overlap=%s)",
+            page_no+1,
+            len(chunk),
+            splitter.chunk_size,
+            splitter.chunk_overlap
         )
 
-        chunks = []
-        idxs = []
-        for idx, doc in enumerate(documents):
-            logging.info(
-                "Splitting page %s into chunks using chunk_size=%s and chunk_overlap=%s",
-                idx+1,
-                text_parser.chunk_size,
-                text_parser.chunk_overlap
-            )
-            doc_chunks = text_parser.split_text(doc.text)
-            chunks.extend(doc_chunks)
-            idxs.extend([idx] * len(doc_chunks))
-
-        # construct text nodes from chunks
-        nodes = []
-        for idx, chunk in enumerate(chunks):
-            node = TextNode(
-                text=chunk
-            )
-            node.metadata = documents[idxs[idx]].metadata
-            nodes.append(node)
-
-        # generate embedding usind ollama embedding
-        embed_model = OllamaEmbedding(
-            model_name=os.environ.get("OLLAMA_MODEL"),
-            base_url=os.environ.get("OLLAMA_BASE_URL")
+    # construct text nodes from chunks
+    nodes = []
+    for idx, chunk in enumerate(chunks):
+        node = TextNode(
+            text=chunk
         )
+        node.metadata = documents[chunks_with_page[idx]].metadata
+        nodes.append(node)
 
-        logging.info("Get text embeddings for %s chunks", len(chunks))
-        for count, node in enumerate(nodes):
-            logging.info("Processing chunk %s ...", count+1)
-            embedding = embed_model.get_text_embedding(
-                node.get_content(metadata_mode="all")
-            )
-            node.embedding = embedding
+    # generate embedding usind ollama embedding
+    embed_model_name = os.environ.get("EMBEDDING_MODEL")
+    embed_model = OllamaEmbedding(
+        model_name=embed_model_name,
+        base_url=os.environ.get("OLLAMA_BASE_URL")
+    )
 
-        Settings.llm = Ollama(
-            model=os.environ.get("OLLAMA_MODEL"),
-            base_url=os.environ.get("OLLAMA_BASE_URL")
+    logging.info("Generate text embeddings for %s chunks using embedding model '%s'",
+        len(nodes),
+        embed_model_name
+    )
+    for count, node in enumerate(nodes):
+        logging.info("Processing chunk %s ...", count+1)
+        embedding = embed_model.get_text_embedding(
+            node.get_content(metadata_mode="all")
         )
-        Settings.embed_model = embed_model
+        node.embedding = embedding
 
-        # create a vector store collection using qdrant vector db
-        logging.info("Checks whether the collection already exists in Qdrant")
-        client = QdrantClient(os.environ.get("QDRANT_URL"))
-        vector_store = QdrantVectorStore(
-            client=client,
-            collection_name=os.environ.get("QDRANT_COLLECTION_NAME")
-        )
+    Settings.llm = Ollama(
+        model=os.environ.get("OLLAMA_MODEL"),
+        base_url=os.environ.get("OLLAMA_BASE_URL")
+    )
+    Settings.embed_model = embed_model
 
-        # add nodes into the vector store
-        logging.info("Store text embeddings into Qdrant")
-        vector_store.add(nodes)
+    # create a vector store collection using qdrant vector db
+    logging.info("Checks whether the collection already exists in Qdrant")
+    client = QdrantClient(os.environ.get("QDRANT_URL"))
+    vector_store = QdrantVectorStore(
+        client=client,
+        collection_name=os.environ.get("QDRANT_COLLECTION_NAME")
+    )
 
-        # create an index from vector store
-        index = VectorStoreIndex.from_vector_store(vector_store)
+    # add nodes into the vector store
+    logging.info("Store text embeddings into Qdrant")
+    vector_store.add(nodes)
+
+    # create an index from vector store
+    index = VectorStoreIndex.from_vector_store(vector_store)
 
 def main():
-    RAG().ingest()
+    ingest()
 
 if __name__ == "__main__":
     main()
