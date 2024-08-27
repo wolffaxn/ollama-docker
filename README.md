@@ -3,6 +3,8 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub last commit (branch)](https://img.shields.io/github/last-commit/wolffaxn/ollama-docker/main.svg)](https://github.com/wolffaxn/ollama-docker)
 
+A RAG implementation on LlamaIndex and Ollama LLM server using Qdrant as vector store.
+
 # Getting started
 
 Clone Git Repository and change into directory.
@@ -11,6 +13,8 @@ Clone Git Repository and change into directory.
 git clone https://github.com/wolffaxn/ollama-docker.git
 cd ollama-docker
 ```
+
+## Setup infrastructure 
 
 Creating a new network in docker (this step only needs to be done once).
 
@@ -42,3 +46,23 @@ The UIs can be accessed at the following URLs.
 - Open WebUI - http://ollama-web.localhost
 - Qdrant - http://qdrant.localhost/dashboard 
 - Traefik - http://localhost:8080/dashboard
+
+## RAG
+
+Create a virtual environment in python.
+
+```sh
+python3 -m venv .venv && source .venv/bin/activate
+```
+
+Install packages.
+
+```sh
+pip install -r requirements.txt
+```
+
+Run the RAG application (ingestion pipeline)
+
+```sh
+python3 rag-llm-qdrant.py
+```
