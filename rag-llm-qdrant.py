@@ -15,28 +15,40 @@ from llama_index.core.schema import TextNode
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+logging.basicConfig(
+    datefmt="%Y-%m-%d %H:%M:%S",
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    style="%",
+    level=logging.INFO
+)
 
 load_dotenv()
 
 class RAG:
     def ingest(self):
-        # load documents
         documents = SimpleDirectoryReader(os.environ.get("DOCS_PATH")).load_data()
+        logging.info("%s pages(s) found", len(documents))
 
         # split the documents into small chunks
+        chunk_size=os.environ.get("CHUNK_SIZE")
+        chunk_overlap=os.environ.get("CHUNK_OVERLAP")
         text_parser = SentenceSplitter(
-            chunk_size=os.environ.get("CHUNK_SIZE"),
-            chunk_overlap=os.environ.get("CHUNK_OVERLAP")
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
         )
 
         chunks = []
         idxs = []
         for idx, doc in enumerate(documents):
-            chunk = text_parser.split_text(doc.text)
-            chunks.extend(chunk)
-            idxs.extend([idx] * len(chunk))
+            logging.info(
+                "Splitting page %s into chunks using chunk_size=%s and chunk_overlap=%s",
+                idx+1,
+                text_parser.chunk_size,
+                text_parser.chunk_overlap
+            )
+            doc_chunks = text_parser.split_text(doc.text)
+            chunks.extend(doc_chunks)
+            idxs.extend([idx] * len(doc_chunks))
 
         # construct text nodes from chunks
         nodes = []
@@ -53,7 +65,9 @@ class RAG:
             base_url=os.environ.get("OLLAMA_BASE_URL")
         )
 
-        for node in nodes:
+        logging.info("Get text embeddings for %s chunks", len(chunks))
+        for count, node in enumerate(nodes):
+            logging.info("Processing chunk %s ...", count+1)
             embedding = embed_model.get_text_embedding(
                 node.get_content(metadata_mode="all")
             )
@@ -66,6 +80,7 @@ class RAG:
         Settings.embed_model = embed_model
 
         # create a vector store collection using qdrant vector db
+        logging.info("Checks whether the collection already exists in Qdrant")
         client = QdrantClient(os.environ.get("QDRANT_URL"))
         vector_store = QdrantVectorStore(
             client=client,
@@ -73,6 +88,7 @@ class RAG:
         )
 
         # add nodes into the vector store
+        logging.info("Store text embeddings into Qdrant")
         vector_store.add(nodes)
 
         # create an index from vector store
