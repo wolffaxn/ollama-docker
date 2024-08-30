@@ -70,25 +70,25 @@ services:
       - "traefik.http.routers.ollama-web.service=ollama-web"
       - "traefik.http.services.ollama-web.loadbalancer.server.port=8080"
 
-  # pipelines:
-  #   image: ghcr.io/open-webui/pipelines:main
-  #   container_name: pipelines
-  #   restart: unless-stopped
-  #   command:
-  #   ports:
-  #     - 9099:9099
-  #   volumes:
-  #     - ./data/pipelines:/app/pipelines
-  #   networks:
-  #     - ollama-net
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.docker.network=ollama-net"
+  pipelines:
+    image: ghcr.io/open-webui/pipelines:main
+    container_name: pipelines
+    restart: unless-stopped
+    command:
+    ports:
+      - 9099:9099
+    volumes:
+      - ./data/pipelines:/app/pipelines
+    networks:
+      - ollama-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=ollama-net"
 
-  #     - "traefik.http.routers.pipelines.rule=Host(`pipelines.localhost`)"
-  #     - "traefik.http.routers.pipelines.entrypoints=web"
-  #     - "traefik.http.routers.pipelines.service=pipelines"
-  #     - "traefik.http.services.pipelines.loadbalancer.server.port=9099"
+      - "traefik.http.routers.pipelines.rule=Host(`pipelines.localhost`)"
+      - "traefik.http.routers.pipelines.entrypoints=web"
+      - "traefik.http.routers.pipelines.service=pipelines"
+      - "traefik.http.services.pipelines.loadbalancer.server.port=9099"
 
   qdrant:
     image: docker.io/qdrant/qdrant:v1.11.0
