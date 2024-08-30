@@ -85,8 +85,5 @@ def ingest():
     # create an index from vector store
     index = VectorStoreIndex.from_vector_store(vector_store)
 
-def main():
-    ingest()
-
 if __name__ == "__main__":
-    main()
+    ingest()

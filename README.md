@@ -61,8 +61,8 @@ Install packages.
 pip install -r requirements.txt
 ```
 
-Run the RAG application (ingestion pipeline)
+Run the ingestion pipeline
 
 ```sh
-python3 rag-llm-qdrant.py
+python3 ingest.py
 ```
