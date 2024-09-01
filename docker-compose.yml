@@ -4,7 +4,7 @@ services:
     container_name: traefik
     restart: unless-stopped
     command:
-#      - --log.level=DEBUG
+      - --log.level=DEBUG
       - --api.insecure=true
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
@@ -71,7 +71,7 @@ services:
       - "traefik.http.services.ollama-web.loadbalancer.server.port=8080"
 
   pipelines:
-    image: ghcr.io/open-webui/pipelines:main
+    image: docker.io/wolffaxn/pipelines:main
     container_name: pipelines
     restart: unless-stopped
     command:
