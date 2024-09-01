@@ -40,12 +40,13 @@ To stop all containers, run the following command.
 docker compose down
 ```
 
-The UIs can be accessed at the following URLs.
+The services can be accessed at the following URLs.
 
 - Ollama - http://ollama.localhost
-- Open WebUI - http://ollama-web.localhost
-- Qdrant - http://qdrant.localhost/dashboard 
-- Traefik - http://localhost:8080/dashboard
+- Open WebUI - http://open-webui.localhost
+- Pipelines - http://pipelines.localhost
+- Qdrant - http://qdrant.localhost/dashboard
+- Traefik - http://proxy.localhost
 
 ## RAG
 
