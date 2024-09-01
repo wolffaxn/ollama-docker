@@ -59,7 +59,10 @@ class Pipeline:
         # This function is called when the server is started.
         global index
 
-        client = QdrantClient(self.valves.QDRANT_URL)
+        client = QdrantClient(
+            url=self.valves.QDRANT_URL,
+            timeout=60
+        )
         vector_store = QdrantVectorStore(
             client=client,
             collection_name=self.valves.QDRANT_COLLECTION_NAME
