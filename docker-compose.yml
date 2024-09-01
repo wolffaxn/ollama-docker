@@ -1,10 +1,10 @@
 services:
-  reverse-proxy:
+  proxy:
     image: docker.io/traefik:v3.1
     container_name: traefik
     restart: unless-stopped
     command:
-#      - --log.level=DEBUG
+      - --log.level=DEBUG
       - --api.insecure=true
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
@@ -18,6 +18,14 @@ services:
       - TZ=Europe/Berlin
     networks:
       - ollama-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=ollama-net"
+
+      - "traefik.http.routers.proxy.rule=Host(`proxy.localhost`)"
+      - "traefik.http.routers.proxy.entrypoints=web"
+      - "traefik.http.routers.proxy.service=proxy"
+      - "traefik.http.services.proxy.loadbalancer.server.port=8080"
 
   ollama:
     container_name: ollama
@@ -42,9 +50,9 @@ services:
       - "traefik.http.routers.ollama.service=ollama"
       - "traefik.http.services.ollama.loadbalancer.server.port=11434"
 
-  ollama-web:
+  open-webui:
     image: ghcr.io/open-webui/open-webui:main
-    container_name: ollama-web
+    container_name: open-webui
     restart: unless-stopped
     depends_on:
       - ollama
@@ -53,10 +61,10 @@ services:
     volumes:
       - ./data/ollama-web:/app/backend/data
     environment:
-      - OLLAMA_BASE_URLS=http://host.docker.internal:7869
-      - ENV=dev
+      - OLLAMA_BASE_URLS=http://ollama:11434
+      - TZ=Europe/Berlin
       - WEBUI_AUTH=false
-      - WEBUI_NAME=ollama-web
+      - WEBUI_NAME=open-webui
       - WEBUI_URL=http://localhost:8081
       - WEBUI_SECRET_KEY=secret
     networks:
@@ -65,13 +73,13 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=ollama-net"
 
-      - "traefik.http.routers.ollama-web.rule=Host(`ollama-web.localhost`)"
-      - "traefik.http.routers.ollama-web.entrypoints=web"
-      - "traefik.http.routers.ollama-web.service=ollama-web"
-      - "traefik.http.services.ollama-web.loadbalancer.server.port=8080"
+      - "traefik.http.routers.open-webui.rule=Host(`open-webui.localhost`)"
+      - "traefik.http.routers.open-webui.entrypoints=web"
+      - "traefik.http.routers.open-webui.service=open-webui"
+      - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
 
   pipelines:
-    image: ghcr.io/open-webui/pipelines:main
+    image: docker.io/wolffaxn/pipelines:main
     container_name: pipelines
     restart: unless-stopped
     command:

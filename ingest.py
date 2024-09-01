@@ -72,7 +72,10 @@ def ingest():
 
     # create a vector store collection using qdrant vector db
     logging.info("Checks whether the collection already exists in Qdrant.")
-    client = QdrantClient(os.environ.get("QDRANT_URL"))
+    client = QdrantClient(
+        url=os.environ.get("QDRANT_URL"),
+        timeout=60
+    )
     vector_store = QdrantVectorStore(
         client=client,
         collection_name=os.environ.get("QDRANT_COLLECTION_NAME")
