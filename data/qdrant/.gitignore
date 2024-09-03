@@ -1,3 +1,4 @@
-aliases/
-collections/
+.deleted
+aliases
+collections
 raft_state.json
