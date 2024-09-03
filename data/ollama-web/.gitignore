@@ -5,4 +5,5 @@ tools/
 uploads/
 vector_db/
 config.json
+old_config.json
 webui.db

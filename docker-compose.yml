@@ -40,8 +40,9 @@ services:
       - ./data/ollama:/root/.ollama
     tty: true
     environment:
-      - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_KEEP_ALIVE=-1
+      - TZ=Europe/Berlin
     networks:
       - ollama-net
     labels:
@@ -85,11 +86,12 @@ services:
     image: docker.io/wolffaxn/pipelines:main
     container_name: pipelines
     restart: unless-stopped
-    command:
     ports:
       - 9099:9099
     volumes:
       - ./data/pipelines:/app/pipelines
+    environment:
+      - TZ=Europe/Berlin
     networks:
       - ollama-net
     labels:
@@ -111,6 +113,8 @@ services:
       - 6334:6334
     volumes:
       - ./data/qdrant:/qdrant/storage:z
+    environment:
+      - TZ=Europe/Berlin
     networks:
       - ollama-net
     labels:
