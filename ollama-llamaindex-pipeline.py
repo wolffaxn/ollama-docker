@@ -11,7 +11,6 @@ requirements: llama-index-core, llama-index-embeddings-ollama, llama-index-llms-
 import os
 
 from pydantic import BaseModel
-from schemas import OpenAIChatMessage
 from typing import List, Union, Generator, Iterator
 
 class Pipeline:
@@ -52,12 +51,12 @@ class Pipeline:
             base_url=self.valves.OLLAMA_BASE_URL,
             request_timeout=600
         )
-        embed_model.request_options(
 
-        )
         Settings.llm = Ollama(
             model=self.valves.OLLAMA_MODEL,
             base_url=self.valves.OLLAMA_BASE_URL,
+            temperature=0,
+            top_k=1,
             request_timeout=600
         )
 
@@ -66,7 +65,7 @@ class Pipeline:
 
         client = QdrantClient(
             url=self.valves.QDRANT_URL,
-            timeout=600
+            timeout=60
         )
         vector_store = QdrantVectorStore(
             client=client,
@@ -88,7 +87,11 @@ class Pipeline:
         print(messages)
         print(user_message)
 
-        query_engine = self.index.as_query_engine(streaming=True)
-        response = query_engine.query(user_message, topK=1)
+        query_engine = self.index.as_query_engine(
+            similarity_top_k=1,
+            vector_store_query_mode="default",
+            streaming=True
+        )
+        result = query_engine.query(user_message)
 
-        return response.reponse_gen
+        return result.response_gen

@@ -62,8 +62,17 @@ Install packages.
 pip install -r requirements.txt
 ```
 
-Run the ingestion pipeline
+Run the ingestion und retrieval scripts
+
+Using Llamaindex
 
 ```sh
-python3 ingest.py
+python llamaindex-ingest.py
+python llamaindex-retrieve.py "<query>"
+```
+Using Langchain
+
+```sh
+python langchain-ingest.py
+python langchain-retrieve.py "<query>"
 ```

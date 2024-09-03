@@ -55,7 +55,7 @@ services:
       - "traefik.http.services.ollama.loadbalancer.server.port=11434"
 
   open-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:v0.3.21
     container_name: open-webui
     restart: unless-stopped
     depends_on:
@@ -65,7 +65,7 @@ services:
     volumes:
       - ./data/ollama-web:/app/backend/data
     environment:
-#      - AIOHTTP_CLIENT_TIMEOUT=""
+      - AIOHTTP_CLIENT_TIMEOUT=""
       - OLLAMA_BASE_URLS=http://ollama:11434
       - TZ=Europe/Berlin
       - WEBUI_AUTH=false
@@ -105,7 +105,7 @@ services:
       - "traefik.http.services.pipelines.loadbalancer.server.port=9099"
 
   qdrant:
-    image: docker.io/qdrant/qdrant:v1.11.0
+    image: docker.io/qdrant/qdrant:v1.11.3
     container_name: qdrant
     restart: unless-stopped
     command:
