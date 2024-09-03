@@ -50,10 +50,15 @@ class Pipeline:
         Settings.embed_model = OllamaEmbedding(
             model_name=self.valves.EMBEDDING_MODEL,
             base_url=self.valves.OLLAMA_BASE_URL,
+            request_timeout=600
+        )
+        embed_model.request_options(
+
         )
         Settings.llm = Ollama(
             model=self.valves.OLLAMA_MODEL,
             base_url=self.valves.OLLAMA_BASE_URL,
+            request_timeout=600
         )
 
         # This function is called when the server is started.
@@ -61,7 +66,7 @@ class Pipeline:
 
         client = QdrantClient(
             url=self.valves.QDRANT_URL,
-            timeout=60
+            timeout=600
         )
         vector_store = QdrantVectorStore(
             client=client,
@@ -84,6 +89,6 @@ class Pipeline:
         print(user_message)
 
         query_engine = self.index.as_query_engine(streaming=True)
-        response = query_engine.query(user_message)
+        response = query_engine.query(user_message, topK=1)
 
         return response.reponse_gen
