@@ -65,6 +65,7 @@ services:
     volumes:
       - ./data/ollama-web:/app/backend/data
     environment:
+#      - AIOHTTP_CLIENT_TIMEOUT=""
       - OLLAMA_BASE_URLS=http://ollama:11434
       - TZ=Europe/Berlin
       - WEBUI_AUTH=false
