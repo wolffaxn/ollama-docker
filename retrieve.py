@@ -49,7 +49,11 @@ def retrieve():
     )
     index = VectorStoreIndex.from_vector_store(vector_store)
 
-    query_engine = index.as_query_engine(streaming=True)
+    query_engine = index.as_query_engine(
+        similarity_top_k=1,
+        vector_store_query_mode="default",
+        streaming=True
+    )
     response = query_engine.query(user_message)
     print(response)
 
