@@ -29,16 +29,19 @@ def retrieve():
 
     Settings.embed_model = OllamaEmbedding(
         model_name=os.environ.get("EMBEDDING_MODEL"),
-        base_url=os.environ.get("OLLAMA_BASE_URL")
+        base_url=os.environ.get("OLLAMA_BASE_URL"),
+        request_timeout=600
     )
     Settings.llm = Ollama(
         model=os.environ.get("OLLAMA_MODEL"),
-        base_url=os.environ.get("OLLAMA_BASE_URL")
+        base_url=os.environ.get("OLLAMA_BASE_URL"),
+        temperature=0,
+        request_timeout=600
     )
 
     client = QdrantClient(
         url=os.environ.get("QDRANT_URL"),
-        timeout=60
+        timeout=600
     )
     vector_store = QdrantVectorStore(
         client=client,
