@@ -9,11 +9,14 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
+      - --accesslog=true
+      - --accesslog.filePath=/logs/access.log
     ports:
       - 80:80
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/traefik/logs:/logs
     environment:
       - TZ=Europe/Berlin
     networks:
