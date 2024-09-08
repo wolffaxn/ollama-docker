@@ -19,33 +19,39 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+# load enviromental variables from .env file
 load_dotenv()
 
-def retrieve():
+EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL")
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL")
+QDRANT_URL = os.environ.get("QDRANT_URL")
+QDRANT_COLLECTION_NAME = os.environ.get("QDRANT_COLLECTION_NAME")
 
-    if len(sys.argv) == 1:
-        exit()
-    user_message = sys.argv[1]
+def query(query_text, collection_name):
 
     Settings.embed_model = OllamaEmbedding(
-        model_name=os.environ.get("EMBEDDING_MODEL"),
-        base_url=os.environ.get("OLLAMA_BASE_URL"),
+        model_name=EMBEDDING_MODEL,
+        base_url=OLLAMA_BASE_URL,
         request_timeout=600
     )
     Settings.llm = Ollama(
-        model=os.environ.get("OLLAMA_MODEL"),
-        base_url=os.environ.get("OLLAMA_BASE_URL"),
+        model=OLLAMA_MODEL,
+        base_url=OLLAMA_BASE_URL,
         temperature=0,
+        top_k=1,
         request_timeout=600
     )
 
+    # initialize Qdrant client
     client = QdrantClient(
-        url=os.environ.get("QDRANT_URL"),
-        timeout=600
+        url=QDRANT_URL,
+        timeout=60
     )
+    # initialize vector store
     vector_store = QdrantVectorStore(
         client=client,
-        collection_name=os.environ.get("QDRANT_COLLECTION_NAME")
+        collection_name=collection_name
     )
     index = VectorStoreIndex.from_vector_store(vector_store)
 
@@ -54,8 +60,12 @@ def retrieve():
         vector_store_query_mode="default",
         streaming=True
     )
-    response = query_engine.query(user_message)
-    print(response)
+    result = query_engine.query(query_text)
+    return result
 
 if __name__ == "__main__":
-    retrieve()
+    if len(sys.argv) > 1:
+        query_text = sys.argv[1]
+        collection_name = QDRANT_COLLECTION_NAME
+
+        print(query(query_text, collection_name))
