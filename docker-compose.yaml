@@ -1,0 +1,6 @@
+include:
+- ./docker/traefik/compose.yaml
+- ./docker/ollama/compose.yaml
+- ./docker/open-webui/compose.yaml
+- ./docker/pipelines/compose.yaml
+- ./docker/qdrant/compose.yaml

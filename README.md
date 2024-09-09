@@ -31,7 +31,7 @@ docker compose up -d
 To start a single container, run the follwing command.
 
 ```sh
-docker compose up -d [traefik|ollama|ollama-web|qdrant]
+docker compose up -d [traefik|ollama|open-webui|pipelines|qdrant]
 ```
 
 To stop all containers, run the following command.
@@ -46,7 +46,7 @@ The services can be accessed at the following URLs.
 - Open WebUI - http://open-webui.localhost
 - Pipelines - http://pipelines.localhost
 - Qdrant - http://qdrant.localhost/dashboard
-- Traefik - http://proxy.localhost
+- Traefik - http://traefik.localhost
 
 ## RAG
 
