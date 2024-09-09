@@ -42,11 +42,11 @@ docker compose down
 
 The services can be accessed at the following URLs.
 
-- Ollama - http://ollama.localhost
-- Open WebUI - http://open-webui.localhost
-- Pipelines - http://pipelines.localhost
-- Qdrant - http://qdrant.localhost/dashboard
-- Traefik - http://traefik.localhost
+- Ollama - https://ollama.localhost
+- Open WebUI - https://open-webui.localhost
+- Pipelines - https://pipelines.localhost
+- Qdrant - https://qdrant.localhost/dashboard
+- Traefik - https://traefik.localhost
 
 ## RAG
 

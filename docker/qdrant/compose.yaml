@@ -12,12 +12,16 @@ services:
     volumes:
       - ./data:/qdrant/storage:z
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=ollama-net"
-      - "traefik.http.routers.qdrant.rule=Host(`qdrant.localhost`)"
-      - "traefik.http.routers.qdrant.entrypoints=web"
-      - "traefik.http.routers.qdrant.service=qdrant"
-      - "traefik.http.services.qdrant.loadbalancer.server.port=6333"
+      traefik.enable: true
+      traefik.docker.network: ollama-net
+      traefik.http.routers.qdrant.rule: Host(`qdrant.localhost`)
+      traefik.http.routers.qdrant.entrypoints: websecure
+      traefik.http.routers.qdrant.tls: true
+      traefik.http.routers.qdrant.service: qdrant
+      traefik.http.services.qdrant.loadbalancer.server.port: 6333
+    depends_on:
+      traefik:
+        condition: service_healthy
     restart: unless-stopped
 
 networks:

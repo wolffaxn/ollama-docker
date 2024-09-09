@@ -7,21 +7,31 @@ services:
     ports:
       - 80:80
       - 8080:8080
-#      - 443:443
+      - 443:443
     networks:
       - ollama-net
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik.yaml:/etc/traefik/traefik.yaml:ro
-      - ./config:/etc/traefik/conf/
+      - ./certs:/certs
+      - ./config:/etc/traefik/conf
       - ./log:/var/log
+      - ./traefik.yaml:/etc/traefik/traefik.yaml:ro
+    healthcheck:
+      test:
+        - CMD
+        - traefik
+        - healthcheck
+      interval: 10s
+      timeout: 5s
+      retries: 3
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=ollama-net"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.traefik.entrypoints=web"
-      - "traefik.http.routers.traefik.service=traefik"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      traefik.enable: true
+      traefik.docker.network: ollama-net
+      traefik.http.routers.traefik.rule: Host(`traefik.localhost`)
+      traefik.http.routers.traefik.entrypoints: websecure
+      traefik.http.routers.traefik.tls: true
+      traefik.http.routers.traefik.service: traefik
+      traefik.http.services.traefik.loadbalancer.server.port: 8080
     restart: unless-stopped
 
 networks:
