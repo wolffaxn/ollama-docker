@@ -14,12 +14,16 @@ services:
     volumes:
       - ./data:/root/.ollama
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=ollama-net"
-      - "traefik.http.routers.ollama.rule=Host(`ollama.localhost`)"
-      - "traefik.http.routers.ollama.entrypoints=web"
-      - "traefik.http.routers.ollama.service=ollama"
-      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+      traefik.enable: true
+      traefik.docker.network: ollama-net
+      traefik.http.routers.ollama.rule: Host(`ollama.localhost`)
+      traefik.http.routers.ollama.entrypoints: websecure
+      traefik.http.routers.ollama.tls: true
+      traefik.http.routers.ollama.service: ollama
+      traefik.http.services.ollama.loadbalancer.server.port: 11434
+    depends_on:
+      traefik:
+        condition: service_healthy
     restart: unless-stopped
 
 networks:

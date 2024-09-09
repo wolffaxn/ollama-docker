@@ -11,12 +11,16 @@ services:
     volumes:
       - ./data:/app/pipelines
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=ollama-net"
-      - "traefik.http.routers.pipelines.rule=Host(`pipelines.localhost`)"
-      - "traefik.http.routers.pipelines.entrypoints=web"
-      - "traefik.http.routers.pipelines.service=pipelines"
-      - "traefik.http.services.pipelines.loadbalancer.server.port=9099"
+      traefik.enable: true
+      traefik.docker.network: ollama-net
+      traefik.http.routers.pipelines.rule: Host(`pipelines.localhost`)
+      traefik.http.routers.pipelines.entrypoints: websecure
+      traefik.http.routers.pipelines.tls: true
+      traefik.http.routers.pipelines.service: pipelines
+      traefik.http.services.pipelines.loadbalancer.server.port: 9099
+    depends_on:
+      traefik:
+        condition: service_healthy
     restart: unless-stopped
 
 networks:
