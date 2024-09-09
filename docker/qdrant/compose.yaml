@@ -1,6 +1,6 @@
 services:
   qdrant:
-    image: docker.io/qdrant/qdrant:v1.11.0
+    image: docker.io/qdrant/qdrant:v1.11.3
     container_name: qdrant
     environment:
       - TZ=Europe/Berlin
