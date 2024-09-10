@@ -24,6 +24,8 @@ api:
 
 # listen on port 80/443
 entryPoints:
+  redis:
+    address: :6379
   web:
     address: :80
     http:

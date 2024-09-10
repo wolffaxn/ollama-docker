@@ -1,0 +1,38 @@
+services:
+  redis:
+    image: docker.io/redis:alpine3.20
+    container_name: redis
+    environment:
+      - TZ=Europe/Berlin
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    networks:
+      - ollama-net
+    volumes:
+      - ./dаta:/root/redis
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    labels:
+      traefik.enable: true
+      traefik.docker.network: ollama-net
+      # routers
+      traefik.tcp.routers.redis.rule: HostSNI(`*`)
+      traefik.tcp.routers.redis.entrypoints: redis
+      traefik.tcp.routers.redis.service: redis
+      # services (needed for TCP)
+      traefik.tcp.services.redis.loadbalancer.server.port: 6379
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    command: ["redis-server"]
+    depends_on:
+      traefik:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  ollama-net:
+    external: true
