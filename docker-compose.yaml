@@ -4,3 +4,4 @@ include:
 - ./docker/open-webui/compose.yaml
 - ./docker/pipelines/compose.yaml
 - ./docker/qdrant/compose.yaml
+- ./docker/redis/compose.yaml
