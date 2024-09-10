@@ -7,16 +7,24 @@ from llama_index.core import (
     Settings,
     SimpleDirectoryReader
 )
+from llama_index.core.ingestion import (
+    DocstoreStrategy,
+    IngestionPipeline,
+    IngestionCache,
+)
 from llama_index.core.node_parser.text import SentenceSplitter
+from llama_index.core.schema import TextNode
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.llms.ollama import Ollama
-from llama_index.core.schema import TextNode
+from llama_index.storage.docstore.redis import RedisDocumentStore
+from llama_index.storage.kvstore.redis import RedisKVStore
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import (
     QdrantClient,
     models
 )
 from qdrant_client.http.exceptions import ResponseHandlingException
+from redis import Redis
 
 logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -35,9 +43,12 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL")
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL")
 QDRANT_URL = os.environ.get("QDRANT_URL")
 QDRANT_COLLECTION_NAME = os.environ.get("QDRANT_COLLECTION_NAME")
+REDIS_URL=os.environ.get("REDIS_URL")
+REDIS_COLLECTION_NAME=os.environ.get("REDIS_COLLECTION_NAME")
 VECTOR_LENGTH = os.environ.get("VECTOR_LENGTH")
+REQUEST_TIMEOUT = 120
 
-def ingest(input_dir, collection_name):
+def ingest(input_dir, qdrant_collection_name, redis_collection_name):
 
     if not os.path.isdir(input_dir):
         logging.error(f"Directory '{input_dir}' doesn't exist")
@@ -52,62 +63,56 @@ def ingest(input_dir, collection_name):
     ).load_data()
     logging.info(f"{len(documents)} page(s) found.")
 
-    logging.info(f"Splitting using SentenceSplitter (chunk_size={CHUNK_SIZE}, chunk_overlap={CHUNK_OVERLAP}).")
-    node_parser = SentenceSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP
-    )
-    nodes = node_parser.get_nodes_from_documents(documents)
-    logging.info(f"{len(nodes)} chunk(s) created.")
-
-    logging.info(f"Generate text embeddings for {len(nodes)} chunk(s) using embedding model '{EMBEDDING_MODEL}'.")
-    embed_model = OllamaEmbedding(
-        model_name=EMBEDDING_MODEL,
-        base_url=OLLAMA_BASE_URL,
-        request_timeout=60
-    )
-    Settings.embed_model = embed_model
-
-    for node_count, node in enumerate(nodes):
-        logging.info(f"Processing chunk {node_count+1} ...")
-        node_embedding = embed_model.get_text_embedding(
-            node.get_content(metadata_mode="all")
-        )
-        node.embedding = node_embedding
-
-    logging.info("Checks whether the collection already exists in Qdrant.")
     # initialize Qdrant client
-    client = QdrantClient(
+    qdrant_client = QdrantClient(
         url=QDRANT_URL,
-        timeout=60
+        timeout=REQUEST_TIMEOUT
     )
-    try:
-        if not client.collection_exists(collection_name):
-            client.create_collection(
-                collection_name=collection_name,
-                vectors_config=models.VectorParams(
-                    size=VECTOR_LENGTH,
-                    distance=models.Distance.COSINE
-                )
+    # initialize redis client
+    redis_kvstore = RedisKVStore(
+        async_redis_client=Redis.from_url(
+            url=REDIS_URL
+        )
+    )
+
+    pipeline = IngestionPipeline(
+        transformations=[
+            SentenceSplitter(
+                chunk_size=CHUNK_SIZE,
+                chunk_overlap=CHUNK_OVERLAP
+            ),
+            OllamaEmbedding(
+                model_name=EMBEDDING_MODEL,
+                base_url=OLLAMA_BASE_URL,
+                request_timeout=REQUEST_TIMEOUT
             )
-            logging.info(f"Created collection '{collection_name}'.")
-        else:
-            logging.info(f"Collection 'collection_name' already exists.")
-    except ResponseHandlingException as e:
-        print(f"Error checking or creating collection: {e}")
-
-    logging.info("Store text embeddings into Qdrant.")
-    vector_store = QdrantVectorStore(
-        client=client,
-        collection_name=collection_name
+        ],
+        cache=IngestionCache(
+            cache=redis_kvstore,
+            collection=redis_collection_name
+        ),
+        docstore=RedisDocumentStore(
+            redis_kvstore=redis_kvstore,
+            namespace=redis_collection_name
+        ),
+        docstore_strategy=DocstoreStrategy.UPSERTS,
+        vector_store=QdrantVectorStore(
+            client=qdrant_client,
+            collection_name=qdrant_collection_name
+        )
     )
-    vector_store.add(nodes)
+    logging.info(f"Using SentenceSplitter (chunk_size={CHUNK_SIZE}, chunk_overlap={CHUNK_OVERLAP}).")
+    logging.info(f"Using embedding model '{EMBEDDING_MODEL}'.")
 
+    nodes = pipeline.run(documents=documents)
+
+    logging.info(f"Ingested {len(nodes)} nodes.")
     logging.info("Ingestion process completed.")
 
 if __name__ == "__main__":
     input_dir=os.path.join(os.getcwd(), DOCS_PATH)
     ingest(
         input_dir=input_dir,
-        collection_name=QDRANT_COLLECTION_NAME
+        qdrant_collection_name=QDRANT_COLLECTION_NAME,
+        redis_collection_name=REDIS_COLLECTION_NAME
     )

@@ -2,6 +2,7 @@ services:
   redis:
     image: docker.io/redis:alpine3.20
     container_name: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
     environment:
       - TZ=Europe/Berlin
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
@@ -11,7 +12,7 @@ services:
     networks:
       - ollama-net
     volumes:
-      - ./dаta:/root/redis
+      - ./data:/data
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf
     labels:
       traefik.enable: true
@@ -27,7 +28,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-    command: ["redis-server"]
     depends_on:
       traefik:
         condition: service_healthy
