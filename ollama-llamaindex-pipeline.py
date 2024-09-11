@@ -27,7 +27,7 @@ class Pipeline:
 
         self.valves = self.Valves(
             **{
-                "OLLAMA_BASE_URL": os.getenv("OLLAMA_BASE_URL", "http://ollama:11434/"),
+                "OLLAMA_BASE_URL": os.getenv("OLLAMA_BASE_URL", "http://host.docker.internal:7869/"),
                 "OLLAMA_MODEL": os.getenv("OLLAMA_MODEL", "llama3.1:8b"),
                 "EMBEDDING_MODEL": os.getenv("EMBEDDING_MODEL", "jina/jina-embeddings-v2-base-de:latest"),
                 "QDRANT_URL": os.getenv("QDRANT_URL", "http://qdrant:6333/"),
