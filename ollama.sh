@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run ollama server with gpu support (metal) on macos.
+# Run an ollama server with gpu support (metal) on macos.
 
 set -euo pipefail
 
