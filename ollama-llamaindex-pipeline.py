@@ -15,6 +15,8 @@ from typing import List, Union, Generator, Iterator
 
 class Pipeline:
 
+    REQUEST_TIMEOUT = 120
+
     class Valves(BaseModel):
         OLLAMA_BASE_URL: str
         OLLAMA_MODEL: str
@@ -49,15 +51,24 @@ class Pipeline:
         Settings.embed_model = OllamaEmbedding(
             model_name=self.valves.EMBEDDING_MODEL,
             base_url=self.valves.OLLAMA_BASE_URL,
-            request_timeout=600
+            request_timeout=self.REQUEST_TIMEOUT
         )
 
         Settings.llm = Ollama(
             model=self.valves.OLLAMA_MODEL,
             base_url=self.valves.OLLAMA_BASE_URL,
-            temperature=0,
-            top_k=1,
-            request_timeout=600
+            # The temperature of the model. Increasing the temperature will
+            # make the model answer more creatively.
+            temperature=0.0,
+            # Reduces the probability of generating nonsense. A higher value
+            # (e.g. 100) will give more diverse answers, while a lower value
+            # (e.g. 10) will be more conservative.
+            top_k=10,
+            # Works together with top-k. A higher value (e.g., 0.95) will lead
+            # to more diverse text, while a lower value (e.g., 0.5) will generate
+            # more focused and conservative text.
+            top_p=0.2,
+            request_timeout=self.REQUEST_TIMEOUT
         )
 
         # This function is called when the server is started.
@@ -65,7 +76,7 @@ class Pipeline:
 
         client = QdrantClient(
             url=self.valves.QDRANT_URL,
-            timeout=60
+            timeout=self.REQUEST_TIMEOUT
         )
         vector_store = QdrantVectorStore(
             client=client,
@@ -88,7 +99,7 @@ class Pipeline:
         print(user_message)
 
         query_engine = self.index.as_query_engine(
-            similarity_top_k=1,
+            similarity_top_k=5,
             vector_store_query_mode="default",
             streaming=True
         )
