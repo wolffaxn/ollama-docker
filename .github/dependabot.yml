@@ -1,0 +1,12 @@
+# set update schedule for github actions
+
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    # look for github actions in the root directory
+    directory: "/"
+    # check for updates every weekday
+    schedule:
+      interval: "daily"
+    assignees:
+      - "wolffaxn"
