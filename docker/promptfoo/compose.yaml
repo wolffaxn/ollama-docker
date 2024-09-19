@@ -1,0 +1,30 @@
+services:
+  promptfoo:
+    container_name: promptfoo
+    image: ghcr.io/promptfoo/promptfoo:0.89.1
+    environment:
+      - PROMPTFOO_DISABLE_TELEMETRY=1
+      - TZ=Europe/Berlin
+    ports:
+      - 3000:3000
+    networks:
+      - ollama-net
+    tty: true
+    volumes:
+      - ./data:/root/.promptfoo
+    labels:
+      traefik.enable: true
+      traefik.docker.network: ollama-net
+      traefik.http.routers.promptfoo.rule: Host(`promptfoo.localhost`)
+      traefik.http.routers.promptfoo.entrypoints: websecure
+      traefik.http.routers.promptfoo.tls: true
+      traefik.http.routers.promptfoo.service: promptfoo
+      traefik.http.services.promptfoo.loadbalancer.server.port: 3000
+    depends_on:
+      traefik:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  ollama-net:
+    external: true

@@ -78,6 +78,7 @@ All services can be accessed via the following links.
 - [Ollama](https://ollama.localhost)
 - [Open WebUI](https://open-webui.localhost)
 - [Pipelines](https://pipelines.localhost)
+- [Promptfoo](https://promptfoo.localhost)
 - [Qdrant](https://qdrant.localhost/dashboard)
 - [Traefik](https://traefik.localhost)
 

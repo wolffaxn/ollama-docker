@@ -3,5 +3,6 @@ include:
 - ./docker/ollama/compose.yaml
 - ./docker/open-webui/compose.yaml
 - ./docker/pipelines/compose.yaml
+- ./docker/promptfoo/compose.yaml
 - ./docker/qdrant/compose.yaml
 - ./docker/redis/compose.yaml
