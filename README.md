@@ -60,14 +60,14 @@ To start all containers, run the following command:
 
 Manage Open WebUI configurations:
 
-    - Open [Open WebUI](https://open-webui.localhost).
-    - Navigate to the **Settings > Connections > OpenAI API** section in Admin Panel.
-      - Add a OpenAI API URL and set it to `http://pipelines:9099` and the API key to `0p3n-w3bu!`.
-      - Add a Ollama API URL and set it to `http://host.docker.internal:7869`.
-    - Navigate to the **Settings > Models** section in Admin Panel.
-      - Pull the following models from Ollama.com:
-        - `jina/jina-embeddings-v2-base-de:latest`
-        - `llama3.1:8b`
+  - Open [Open WebUI](https://open-webui.localhost).
+  - Navigate to the **Settings > Connections > OpenAI API** section in Admin Panel.
+    - Add a OpenAI API URL and set it to `http://pipelines:9099` and the API key to `0p3n-w3bu!`.
+    - Add a Ollama API URL and set it to `http://host.docker.internal:7869`.
+  - Navigate to the **Settings > Models** section in Admin Panel.
+    - Pull the following models from Ollama.com:
+      - `jina/jina-embeddings-v2-base-de:latest`
+      - `llama3.1:8b`
 
 > [!TIP]
 > With `ollama.sh` you can run an ollama server with gpu support (metal) on macos. 
