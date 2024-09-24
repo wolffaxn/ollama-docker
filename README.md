@@ -9,27 +9,27 @@ This repository contains a RAG pipeline using LlamaIndex framework, Ollama as lo
 
 ## 📦 Installation and Setup
 
-1. Ensure Python 3.12 is installed.
+Ensure Python 3.12 is installed.
 
   ```sh
   python --version
   Python 3.12.4
   ```
 
-2. Clone the repository (or download it as a zip file):
+Clone the repository (or download it as a zip file):
 
   ```sh
   git clone https://github.com/wolffaxn/ollama-docker.git
   cd ollama-docker
   ```
 
-3. Create the virtual environment named venv using Pip with Python version 3.12:
+Create the virtual environment named venv using Pip with Python version 3.12:
 
   ```sh
   python3 -m venv .venv && source .venv/bin/activate
   ```
 
-4. Install the project dependencies included in the requirements.txt:
+Install the project dependencies included in the requirements.txt:
 
   ```sh
   pip install -r requirements.txt
@@ -37,7 +37,7 @@ This repository contains a RAG pipeline using LlamaIndex framework, Ollama as lo
 
  ## ⚡ Quick Start with Docker
 
-1. Create a new docker network named ollama-net:
+Create a new docker network named ollama-net:
 
   ```sh
   docker network create ollama-net 
@@ -45,7 +45,7 @@ This repository contains a RAG pipeline using LlamaIndex framework, Ollama as lo
 > [!NOTE]
 > The step above only needs to be done once.
 
-2. To start all containers, run the following command:
+To start all containers, run the following command:
 
   ```sh
   docker compose up -d
@@ -58,7 +58,7 @@ This repository contains a RAG pipeline using LlamaIndex framework, Ollama as lo
 > docker compose up -d [ollama|open-webui|pipelines|qdrant|redis|traefik]
 > ```
 
-3. Manage Open WebUI configurations:
+Manage Open WebUI configurations:
 
     - Open [Open WebUI](https://open-webui.localhost).
     - Navigate to the **Settings > Connections > OpenAI API** section in Admin Panel.
@@ -84,7 +84,7 @@ All services can be accessed via the following links.
 
 ## Ingestion and Retrieval
 
-1. Run the ingestion und retrieval scripts.
+Run the ingestion und retrieval scripts.
 
   Using Llamaindex
 
