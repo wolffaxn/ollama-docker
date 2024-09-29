@@ -84,20 +84,14 @@ All services can be accessed via the following links.
 
 ## Ingestion and Retrieval
 
-Run the ingestion und retrieval scripts.
-
-  Using Llamaindex
+Run the ingestion pipeline.
 
   ```sh
-  python llamaindex-ingest.py
-  python llamaindex-retrieve.py "<query>"
+  ./ingest.sh
   ```
 
-  Using Langchain
+Run a query.
 
   ```sh
-  python langchain-ingest.py
-  python langchain-retrieve.py "<query>"
+  cd rag && python llamaindex-retrieve.py "<query>"
   ```
-> [!NOTE]
-> The implementation with langchain is in an early stage.
