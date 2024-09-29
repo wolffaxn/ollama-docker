@@ -89,15 +89,6 @@ Run the ingestion und retrieval scripts.
   Using Llamaindex
 
   ```sh
-  python llamaindex-ingest.py
+  python ingest.py
   python llamaindex-retrieve.py "<query>"
   ```
-
-  Using Langchain
-
-  ```sh
-  python langchain-ingest.py
-  python langchain-retrieve.py "<query>"
-  ```
-> [!NOTE]
-> The implementation with langchain is in an early stage.
