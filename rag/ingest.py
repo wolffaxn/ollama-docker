@@ -13,7 +13,7 @@ from llama_index.storage.docstore.redis import RedisDocumentStore
 from config import RAGConfig
 from embeddings import Embedding, EmbeddingProvider
 from llm import LLM, LLMProvider
-from util import  QdrantUtil, RedisUtil
+from util import QdrantUtil, RedisUtil
 
 logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
