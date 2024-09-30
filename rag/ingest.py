@@ -1,33 +1,19 @@
 import logging
 import os
+from pathlib import Path
+from typing import List, Optional, Sequence, Union
 
-from llama_index.core import (
-    SimpleDirectoryReader
-)
-from llama_index.core.extractors import (
-    KeywordExtractor,
-    SummaryExtractor
-)
-from llama_index.core.ingestion import (
-    DocstoreStrategy,
-    IngestionCache,
-    IngestionPipeline
-)
+from llama_index.core import SimpleDirectoryReader
+from llama_index.core.extractors import KeywordExtractor, SummaryExtractor
+from llama_index.core.ingestion import DocstoreStrategy, IngestionCache, IngestionPipeline
 from llama_index.core.node_parser.text import SentenceSplitter
+from llama_index.core.schema import BaseNode, Document
 from llama_index.storage.docstore.redis import RedisDocumentStore
+
 from config import RAGConfig
-from embeddings import (
-    Embedding,
-    EmbeddingProvider
-)
-from llm import (
-    LLM,
-    LLMProvider
-)
-from util import (
-    QdrantUtil,
-    RedisUtil
-)
+from embeddings import Embedding, EmbeddingProvider
+from llm import LLM, LLMProvider
+from util import  QdrantUtil, RedisUtil
 
 logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -39,12 +25,13 @@ logger = logging.getLogger(__name__)
 
 config = RAGConfig
 
-def get_documents(input_dir):
+def get_documents(
+    input_dir: Optional[Union[Path, str]] = None
+) -> List[Document]:
     documents = None
 
-    if not os.path.isdir(input_dir):
-        logger.error(f"Directory '{input_dir}' doesn't exist")
-        return documents
+    if not os.path.exists(input_dir):
+        raise FileNotFoundError(f"Directory '{input_dir}' doesn't exist")
 
     # read in PDF documents from filesystem using SimpleDirectoryReader
     logger.info(f"Load documents from '{input_dir}'")
@@ -56,7 +43,9 @@ def get_documents(input_dir):
     logger.info(f"Found {len(documents)} page(s)")
     return documents
 
-def run_pipeline(documents):
+def run_pipeline(
+    documents: List[Document]
+) -> Sequence[BaseNode]:
 
     qdrant_client = QdrantUtil.get_client(
         url=config.QDRANT_URL,

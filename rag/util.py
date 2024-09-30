@@ -46,7 +46,7 @@ class QdrantUtil:
 class RedisUtil:
     @staticmethod
     def get_client(
-        url:str
+        url: str
     ) -> Redis:
         return Redis.from_url(url=url)
 

@@ -1,5 +1,6 @@
 from enum import Enum
 import logging
+from llama_index.core.llms.function_calling import FunctionCallingLLM
 from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 from typing import Optional
@@ -56,7 +57,7 @@ class LLM:
     def get_llm(
         self,
         provider: Optional[LLMProvider] = LLMProvider.OPENAPI
-    ):
+    ) -> FunctionCallingLLM:
         if provider is LLMProvider.OLLAMA:
             self._initialize_ollama()
         elif provider is LLMProvider.OPENAPI:

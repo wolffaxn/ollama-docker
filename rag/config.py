@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 
 # load enviromental variables from .env file
