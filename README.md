@@ -93,5 +93,6 @@ Run the ingestion pipeline.
 Run a query.
 
   ```sh
-  cd rag && python llamaindex-retrieve.py "<query>"
+  ./queryengine.sh <query>
+  ./chatengine.sh
   ```
