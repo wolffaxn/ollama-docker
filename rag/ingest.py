@@ -3,15 +3,18 @@ import os
 from pathlib import Path
 from typing import List, Optional, Sequence, Union
 
+from config import RAGConfig
+from embeddings import Embedding, EmbeddingProvider
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.extractors import KeywordExtractor, SummaryExtractor
-from llama_index.core.ingestion import DocstoreStrategy, IngestionCache, IngestionPipeline
+from llama_index.core.ingestion import (
+    DocstoreStrategy,
+    IngestionCache,
+    IngestionPipeline,
+)
 from llama_index.core.node_parser.text import SentenceSplitter
 from llama_index.core.schema import BaseNode, Document
 from llama_index.storage.docstore.redis import RedisDocumentStore
-
-from config import RAGConfig
-from embeddings import Embedding, EmbeddingProvider
 from llm import LLM, LLMProvider
 from util import QdrantUtil, RedisUtil
 

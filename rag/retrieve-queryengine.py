@@ -1,21 +1,16 @@
 import logging
-import os
 import sys
 
+from config import RAGConfig
 from dotenv import load_dotenv
+from embeddings import Embedding, EmbeddingProvider
 from llama_index.core import Settings, VectorStoreIndex
 from llama_index.core.base.response.schema import RESPONSE_TYPE
 from llama_index.core.indices.postprocessor import SimilarityPostprocessor
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.response.pprint_utils import pprint_response
 from llama_index.core.retrievers import VectorIndexRetriever
-from llama_index.embeddings.ollama import OllamaEmbedding
-from llama_index.llms.ollama import Ollama
 from llama_index.vector_stores.qdrant import QdrantVectorStore
-from qdrant_client import QdrantClient
-
-from config import RAGConfig
-from embeddings import Embedding, EmbeddingProvider
 from llm import LLM, LLMProvider
 from util import QdrantUtil
 

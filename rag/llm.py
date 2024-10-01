@@ -1,10 +1,10 @@
-from enum import Enum
 import logging
-from llama_index.core.llms.function_calling import FunctionCallingLLM
+from enum import Enum
+from typing import Optional
+
+from config import RAGConfig
 from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
-from typing import Optional
-from config import RAGConfig
 
 logger = logging.getLogger(__name__)
 
@@ -13,14 +13,14 @@ class LLMProvider(Enum):
     OPENAPI = "openapi"
 
 class LLM:
-    def __init__(self, config: RAGConfig):
-        self.config = config
-        self.llm = None
+    def __init__(self, config: RAGConfig) -> None:
+        self._config = config
+        self._llm = None
 
-    def _initialize_ollama(self):
-        self.llm = Ollama(
-            base_url=self.config.OLLAMA_BASE_URL,
-            model=self.config.OLLAMA_MODEL,
+    def _initialize_ollama(self) -> None:
+        self._llm = Ollama(
+            base_url=self._config.OLLAMA_BASE_URL,
+            model=self._config.OLLAMA_MODEL,
             # The temperature of the model. Increasing the temperature will
             # make the model answer more creatively.
             temperature=0.0,
@@ -32,14 +32,14 @@ class LLM:
             # to more diverse text, while a lower value (e.g., 0.5) will generate
             # more focused and conservative text.
             top_p=0.2,
-            request_timeout=self.config.REQUEST_TIMEOUT
+            request_timeout=self._config.REQUEST_TIMEOUT
         )
 
-    def _initialize_openai(self):
-        self.llm = OpenAI(
-            api_base=f"{self.config.OPEN_API_BASE_URL}/v1",
-            api_key=self.config.OPEN_API_KEY,
-            api_version=self.config.OPEN_API_VERSION,
+    def _initialize_openai(self) -> None:
+        self._llm = OpenAI(
+            api_base=f"{self._config.OPEN_API_BASE_URL}/v1",
+            api_key=self._config.OPEN_API_KEY,
+            api_version=self._config.OPEN_API_VERSION,
             # The temperature of the model. Increasing the temperature will
             # make the model answer more creatively.
             temperature=0.0,
@@ -51,16 +51,15 @@ class LLM:
             # to more diverse text, while a lower value (e.g., 0.5) will generate
             # more focused and conservative text.
             top_p=0.2,
-            request_timeout=self.config.REQUEST_TIMEOUT
+            request_timeout=self._config.REQUEST_TIMEOUT
         )
 
     def get_llm(
         self,
         provider: Optional[LLMProvider] = LLMProvider.OPENAPI
-    ) -> FunctionCallingLLM:
+    ) -> Ollama | OpenAI:
         if provider is LLMProvider.OLLAMA:
             self._initialize_ollama()
         elif provider is LLMProvider.OPENAPI:
             self._initialize_openai()
-        return self.llm
-
+        return self._llm

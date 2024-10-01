@@ -1,12 +1,11 @@
 import logging
 
+from config import RAGConfig
 from dotenv import load_dotenv
+from embeddings import Embedding, EmbeddingProvider
 from llama_index.core import Settings, VectorStoreIndex
 from llama_index.core.chat_engine.types import BaseChatEngine, ChatMode
 from llama_index.vector_stores.qdrant import QdrantVectorStore
-
-from config import RAGConfig
-from embeddings import Embedding, EmbeddingProvider
 from llm import LLM, LLMProvider
 from util import QdrantUtil
 

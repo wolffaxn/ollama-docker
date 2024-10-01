@@ -1,3 +1,5 @@
+from typing import Optional
+
 from llama_index.storage.kvstore.redis import RedisKVStore
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
@@ -7,9 +9,8 @@ from tenacity import (
     retry,
     retry_if_exception_type,
     stop_after_attempt,
-    wait_exponential
+    wait_exponential,
 )
-from typing import Optional
 
 class QdrantUtil:
     @retry(
@@ -45,13 +46,9 @@ class QdrantUtil:
 
 class RedisUtil:
     @staticmethod
-    def get_client(
-        url: str
-    ) -> Redis:
+    def get_client(url: str) -> Redis:
         return Redis.from_url(url=url)
 
     @staticmethod
-    def get_kvstore(
-        client: Redis
-    ) -> RedisKVStore:
+    def get_kvstore(client: Redis) -> RedisKVStore:
         return RedisKVStore(async_redis_client=client)
