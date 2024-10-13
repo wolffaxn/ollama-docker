@@ -2,7 +2,7 @@ from typing import Optional
 
 from llama_index.storage.kvstore.redis import RedisKVStore
 from llama_index.vector_stores.qdrant import QdrantVectorStore
-from qdrant_client import QdrantClient
+from qdrant_client import models, QdrantClient
 from qdrant_client.http.exceptions import ResponseHandlingException
 from redis import Redis
 from tenacity import (
@@ -37,11 +37,33 @@ class QdrantUtil:
     @staticmethod
     def get_vectorstore(
         client: QdrantClient,
-        collection_name: str
+        collection_name: str,
+        enable_hybrid: Optional[bool] = False
     ) -> QdrantVectorStore:
         return QdrantVectorStore(
             client=client,
-            collection_name=collection_name
+            collection_name=collection_name,
+            enable_hybrid=enable_hybrid
+        )
+
+    @staticmethod
+    def recreate_collection(
+        client: QdrantClient,
+        collection_name: str
+    ) -> None:
+        client.recreate_collection(
+            collection_name=collection_name,
+            vectors_config={
+                "text-dense": models.VectorParams(
+                    distance=models.Distance.COSINE,
+                    size=768
+                )
+            },
+            sparse_vectors_config={
+                "text-sparse": models.SparseVectorParams(
+                    index=models.SparseIndexParams()
+                )
+            }
         )
 
 class RedisUtil:

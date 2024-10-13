@@ -55,6 +55,11 @@ def run_pipeline(
         timeout=config.REQUEST_TIMEOUT
     )
 
+    QdrantUtil.recreate_collection(
+        client=qdrant_client,
+        collection_name=config.QDRANT_COLLECTION_NAME
+    )
+
     redis_kvstore = RedisUtil.get_kvstore(
         client=RedisUtil.get_client(url=config.REDIS_URL)
     )
@@ -88,7 +93,8 @@ def run_pipeline(
         docstore_strategy=DocstoreStrategy.UPSERTS,
         vector_store=QdrantUtil.get_vectorstore(
             client=qdrant_client,
-            collection_name=config.QDRANT_COLLECTION_NAME
+            collection_name=config.QDRANT_COLLECTION_NAME,
+            enable_hybrid=True
         )
     )
     nodes = pipeline.run(documents=documents)

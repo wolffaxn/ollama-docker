@@ -13,7 +13,6 @@ from typing import Generator, Iterator, List, Union
 
 from pydantic import BaseModel
 
-
 class Pipeline:
 
     REQUEST_TIMEOUT = 120

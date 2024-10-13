@@ -12,7 +12,6 @@ class EmbeddingProvider(Enum):
     OLLAMA = "ollama"
     OPENAPI = "openapi"
 
-
 class Embedding:
     def __init__(self, config: RAGConfig) -> None:
         self._config = config
