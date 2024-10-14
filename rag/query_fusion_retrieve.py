@@ -1,6 +1,5 @@
 import logging
 import sys
-from typing import Optional
 
 from config import RAGConfig
 from dotenv import load_dotenv
@@ -10,7 +9,8 @@ from llama_index.core.base.response.schema import RESPONSE_TYPE
 from llama_index.core.indices.postprocessor import SimilarityPostprocessor
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.response.pprint_utils import pprint_response
-from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.retrievers import QueryFusionRetriever, VectorIndexRetriever
+from llama_index.retrievers.bm25 import BM25Retriever
 from llm import LLM, LLMProvider
 from util import QdrantUtil
 
@@ -26,9 +26,7 @@ load_dotenv()
 
 config = RAGConfig
 
-def query(
-    query_text: str,
-    query_mode: Optional[str]="default") -> RESPONSE_TYPE:
+def query(query_text: str) -> RESPONSE_TYPE:
 
     Settings.embed_model = Embedding(config).get_embedding_model(EmbeddingProvider.OLLAMA)
     Settings.llm = LLM(config).get_llm(LLMProvider.OLLAMA)
@@ -40,24 +38,40 @@ def query(
     # initialize vector store
     vector_store = QdrantUtil.get_vectorstore(
         client=qdrant_client,
-        collection_name=config.QDRANT_COLLECTION_NAME,
-        enable_hybrid=True
+        collection_name=config.QDRANT_COLLECTION_NAME
     )
     index = VectorStoreIndex.from_vector_store(vector_store)
 
-    retriever = VectorIndexRetriever(
+    vector_retriever = VectorIndexRetriever(
         index=index,
-        similarity_top_k=2,
-        vector_store_query_mode=query_mode
+        similarity_top_k=2
     )
 
-    postprocessor = SimilarityPostprocessor(
-        similarity_cutoff=0.40
+    bm25_retriever = BM25Retriever.from_defaults(
+        index=index,
+        similarity_top_k=2
     )
+
+    retriever = QueryFusionRetriever(
+        [vector_retriever],
+        similarity_top_k=2,
+        mode="reciprocal_rerank",
+        num_queries=4,
+        use_async=False,
+        verbose=True,
+    )
+
+    nodes_with_scores = retriever.retrieve(query_text)
+    for node in nodes_with_scores:
+        print(f"Score: {node.score:.2f} - {node.text}...\n-----\n")
+
+    # postprocessor = SimilarityPostprocessor(
+    #     similarity_cutoff=0.40
+    # )
 
     query_engine = RetrieverQueryEngine(
         retriever=retriever,
-        node_postprocessors=[postprocessor]
+#        node_postprocessors=[postprocessor]
     )
     result = query_engine.query(query_text)
     return result
@@ -65,26 +79,7 @@ def query(
 def main():
     if len(sys.argv) > 1:
         query_text = sys.argv[1]
-        print(f"Query: {query_text}")
-
         result = query(query_text)
-        print("\nDefault Results:")
-        pprint_response(result, show_source=True)
-
-        result = query(query_text, query_mode="sparse")
-        print("\nSparse Results:")
-        pprint_response(result, show_source=True)
-
-        result = query(query_text, query_mode="hybrid")
-        print("\nHybrid Results:")
-        pprint_response(result, show_source=True)
-
-        result = query(query_text, query_mode="text_search")
-        print("\nText Search Results:")
-        pprint_response(result, show_source=True)
-
-        result = query(query_text, query_mode="semantic_hybrid")
-        print("\nSematic Hybrid Results:")
         pprint_response(result, show_source=True)
 
 if __name__ == "__main__":

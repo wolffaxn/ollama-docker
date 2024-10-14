@@ -1,6 +1,5 @@
 import logging
 from enum import Enum
-from typing import Optional
 
 from config import RAGConfig
 from llama_index.embeddings.ollama import OllamaEmbedding
@@ -32,7 +31,7 @@ class Embedding:
 
     def get_embedding_model(
         self,
-        provider: Optional[EmbeddingProvider] = EmbeddingProvider.OPENAPI
+        provider: EmbeddingProvider = EmbeddingProvider.OPENAPI
     ) -> OllamaEmbedding | OpenAIEmbedding:
         if provider is EmbeddingProvider.OLLAMA:
             self._initialize_ollama_embedding()
