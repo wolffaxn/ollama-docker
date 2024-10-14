@@ -6,7 +6,7 @@ from typing import List, Optional, Sequence, Union
 from config import RAGConfig
 from embeddings import Embedding, EmbeddingProvider
 from llama_index.core import SimpleDirectoryReader
-from llama_index.core.extractors import KeywordExtractor, SummaryExtractor
+from llama_index.core.extractors import KeywordExtractor
 from llama_index.core.ingestion import (
     DocstoreStrategy,
     IngestionCache,
@@ -57,7 +57,9 @@ def run_pipeline(
 
     QdrantUtil.recreate_collection(
         client=qdrant_client,
-        collection_name=config.QDRANT_COLLECTION_NAME
+        collection_name=config.QDRANT_COLLECTION_NAME,
+        size=config.VECTOR_LENGTH,
+        enable_hybrid=config.ENABLE_HYBRID
     )
 
     redis_kvstore = RedisUtil.get_kvstore(
@@ -76,10 +78,6 @@ def run_pipeline(
                 llm,
                 show_progress=False
             ),
-            # SummaryExtractor(
-            #     llm,
-            #     show_progress=False
-            # ),
             Embedding(config).get_embedding_model(EmbeddingProvider.OLLAMA)
         ],
         cache=IngestionCache(
@@ -94,7 +92,7 @@ def run_pipeline(
         vector_store=QdrantUtil.get_vectorstore(
             client=qdrant_client,
             collection_name=config.QDRANT_COLLECTION_NAME,
-            enable_hybrid=True
+            enable_hybrid=config.ENABLE_HYBRID
         )
     )
     nodes = pipeline.run(documents=documents)

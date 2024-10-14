@@ -78,5 +78,14 @@ def main():
         result = query(query_text, query_mode="hybrid")
         print("\nHybrid Results:")
         pprint_response(result, show_source=True)
+
+        result = query(query_text, query_mode="text_search")
+        print("\nText Search Results:")
+        pprint_response(result, show_source=True)
+
+        result = query(query_text, query_mode="semantic_hybrid")
+        print("\nSematic Hybrid Results:")
+        pprint_response(result, show_source=True)
+
 if __name__ == "__main__":
     main()

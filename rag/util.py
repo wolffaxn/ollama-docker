@@ -2,7 +2,7 @@ from typing import Optional
 
 from llama_index.storage.kvstore.redis import RedisKVStore
 from llama_index.vector_stores.qdrant import QdrantVectorStore
-from qdrant_client import models, QdrantClient
+from qdrant_client import QdrantClient, models
 from qdrant_client.http.exceptions import ResponseHandlingException
 from redis import Redis
 from tenacity import (
@@ -38,7 +38,7 @@ class QdrantUtil:
     def get_vectorstore(
         client: QdrantClient,
         collection_name: str,
-        enable_hybrid: Optional[bool] = False
+        enable_hybrid: bool = False
     ) -> QdrantVectorStore:
         return QdrantVectorStore(
             client=client,
@@ -49,22 +49,34 @@ class QdrantUtil:
     @staticmethod
     def recreate_collection(
         client: QdrantClient,
-        collection_name: str
+        collection_name: str,
+        size: int,
+        enable_hybrid: bool = False
     ) -> None:
-        client.recreate_collection(
-            collection_name=collection_name,
-            vectors_config={
-                "text-dense": models.VectorParams(
-                    distance=models.Distance.COSINE,
-                    size=768
+        if enable_hybrid:
+            client.recreate_collection(
+                collection_name=collection_name,
+                vectors_config={
+                    "text-dense": models.VectorParams(
+                        distance=models.Distance.COSINE,
+                        size=size
+                    )
+                },
+                sparse_vectors_config={
+                    "text-sparse": models.SparseVectorParams(
+                        index=models.SparseIndexParams()
+                    )
+                }
+            )
+        else:
+            if not client.collection_exists(collection_name):
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config=models.VectorParams(
+                        distance=models.Distance.COSINE,
+                        size=size
+                    )
                 )
-            },
-            sparse_vectors_config={
-                "text-sparse": models.SparseVectorParams(
-                    index=models.SparseIndexParams()
-                )
-            }
-        )
 
 class RedisUtil:
     @staticmethod

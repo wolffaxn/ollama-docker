@@ -11,6 +11,7 @@ class RAGConfig:
     CHUNK_OVERLAP = os.environ.get("CHUNK_OVERLAP")
     DOCS_PATH = os.environ.get("DOCS_PATH")
     EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL")
+    ENABLE_HYBRID = os.environ.get("ENABLE_HYBRID", "False").lower() in ("true", "1")
     OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL")
     OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL")
     OPEN_API_BASE_URL = os.environ.get("OPEN_API_BASE_URL")
@@ -20,7 +21,8 @@ class RAGConfig:
     QDRANT_COLLECTION_NAME = os.environ.get("QDRANT_COLLECTION_NAME")
     REDIS_URL=os.environ.get("REDIS_URL")
     REDIS_COLLECTION_NAME=os.environ.get("REDIS_COLLECTION_NAME")
-    REQUEST_TIMEOUT = 120
+    REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT"))
+    VECTOR_LENGTH = int(os.environ.get("VECTOR_LENGTH"))
 
     def __setattr__(self, name, value):
         raise AttributeError(f"Can't reassign constant '{name}'")

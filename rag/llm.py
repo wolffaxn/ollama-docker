@@ -1,6 +1,5 @@
 import logging
 from enum import Enum
-from typing import Optional
 
 from config import RAGConfig
 from llama_index.llms.ollama import Ollama
@@ -56,7 +55,7 @@ class LLM:
 
     def get_llm(
         self,
-        provider: Optional[LLMProvider] = LLMProvider.OPENAPI
+        provider: LLMProvider = LLMProvider.OPENAPI
     ) -> Ollama | OpenAI:
         if provider is LLMProvider.OLLAMA:
             self._initialize_ollama()
