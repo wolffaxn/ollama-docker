@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-python ./rag/retrieve-queryengine.py
+python ./src/rag/retrieve-queryengine.py "$@"

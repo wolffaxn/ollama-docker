@@ -1,0 +1,23 @@
+[project]
+name = "ollama-docker"
+version = "0.6.0"
+authors = [
+  { name="Alexander Wolff", email="wolffaxn@gmail.com"}
+]
+description = "A RAG implementation on LlamaIndex and Ollama LLM server using Qdrant as vector store."
+readme = "README.md"
+requires-python = ">= 3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+
+[project.urls]
+Homepage = "https://github.com/wolffaxn/ollama-docker"
+Issues = "https://github.com/wolffaxn/ollama-docker/issues"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"

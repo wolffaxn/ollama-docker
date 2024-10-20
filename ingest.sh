@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-python ./rag/ingest.py
+python ./src/rag/ingest.py
