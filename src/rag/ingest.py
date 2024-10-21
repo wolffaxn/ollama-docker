@@ -6,7 +6,7 @@ from typing import List, Optional, Sequence, Union
 from config import RAGConfig
 from embeddings import Embedding, EmbeddingProvider
 from llama_index.core import SimpleDirectoryReader
-from llama_index.core.extractors import KeywordExtractor, SummaryExtractor
+from llama_index.core.extractors import KeywordExtractor
 from llama_index.core.ingestion import (
     DocstoreStrategy,
     IngestionCache,
