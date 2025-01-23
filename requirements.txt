@@ -7,4 +7,4 @@ llama-index-vector-stores-qdrant==0.4.1
 
 ollama==0.4.7
 python-dotenv==1.0.1
-qdrant-client==1.13.0
+qdrant-client==1.13.2
