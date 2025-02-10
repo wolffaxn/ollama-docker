@@ -1,0 +1,6 @@
+http:
+  middlewares:
+    traefik-auth:
+      basicAuth:
+        users:
+          - admin:$apr1$Wkj3oeyn$Twgb/kn/WEe/c0qNHDog00

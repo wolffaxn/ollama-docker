@@ -1,31 +1,31 @@
 ## STATIC CONFIG (restart traefik to update)
 
-# shows you a log msg if a newer image tag can be used
 global:
   checkNewVersion: false
   sendAnonymousUsage: false
 
-# log default is ERROR, but WARN is more helpful
+# logging
 log:
-  level: DEBUG
-#  level: INFO
-  format: common
   filePath: /var/log/traefik/traefik.log
+  format: json
+  level: DEBUG
 
 accesslog:
-  format: common
   filePath: /var/log/traefik/access.log
+  format: json
+  fields:
+    defaultMode: keep
 
-# enable dashboard on 8080 with NO AUTH
+# enable traefik ui dashboard
 api:
   dashboard: true
   disableDashboardAd: true
-  insecure: true
+  debug: false
+  insecure: false
 
-# listen on port 80/443
+# traefik entrypoints configuration
 entryPoints:
-  redis:
-    address: :6379
+  # HTTP(S)
   web:
     address: :80
     http:
@@ -36,25 +36,18 @@ entryPoints:
           permanent: true
   websecure:
     address: :443
+  # TCP
+  redis:
+    address: :6379
 
 # enable ping so the `traefik healthcheck` works
 ping: {}
 
 providers:
   docker:
-    # -- (Optional) Enable this, if you want to expose all containers automatically
     exposedByDefault: false
+    endpoint: 'unix:///var/run/docker.sock'
     watch: true
   file:
-    directory: /etc/traefik
+    directory: /etc/traefik/conf/
     watch: true
-
-## DYNAMIC CONFIG
-
-tls:
-  certificates:
-    - certFile: /certs/localhost.crt
-      keyFile: /certs/localhost.key
-  # options:
-    # default:
-      # sniStrict: true

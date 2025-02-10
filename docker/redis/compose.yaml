@@ -1,22 +1,21 @@
 services:
   redis:
-    image: docker.io/redis:alpine3.20
     container_name: redis
+    image: docker.io/redis:7.4.2-alpine
     command: redis-server /usr/local/etc/redis/redis.conf
     environment:
       - TZ=Europe/Berlin
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
     networks:
-      - ollama-net
+      - backend
     volumes:
       - ./data:/data
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf
     labels:
       traefik.enable: true
-      traefik.docker.network: ollama-net
       # routers
       traefik.tcp.routers.redis.rule: HostSNI(`*`)
       traefik.tcp.routers.redis.entrypoints: redis
@@ -34,5 +33,5 @@ services:
     restart: unless-stopped
 
 networks:
-  ollama-net:
+  backend:
     external: true

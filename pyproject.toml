@@ -1,6 +1,6 @@
 [project]
 name = "ollama-docker"
-version = "0.6.0"
+version = "0.7.0"
 authors = [
   { name="Alexander Wolff", email="wolffaxn@gmail.com"}
 ]

@@ -1,28 +1,23 @@
 services:
   open-webui:
-    image: ghcr.io/open-webui/open-webui:v0.3.21
     container_name: open-webui
+    image: ghcr.io/open-webui/open-webui:v0.5.4
     environment:
-#      - AIOHTTP_CLIENT_TIMEOUT=""
-      - OLLAMA_BASE_URLS=http://ollama:11434
       - TZ=Europe/Berlin
-      - WEBUI_AUTH=false
-      - WEBUI_NAME=open-webui
-      - WEBUI_URL=http://localhost:8081
-      - WEBUI_SECRET_KEY=secret
-    ports:
-      - 8081:8080
+      - OPENAI_API_BASE_URL=http://pipelines:9099
+      - OPENAI_API_KEY=0p3n-w3bu!
+    # ports:
+    #   - 8081:8080
     networks:
-      - ollama-net
+      - frontend
+      - backend
     volumes:
       - ./data:/app/backend/data
     labels:
       traefik.enable: true
-      traefik.docker.network: ollama-net
-      traefik.http.routers.open-webui.rule: Host(`open-webui.localhost`)
       traefik.http.routers.open-webui.entrypoints: websecure
       traefik.http.routers.open-webui.tls: true
-      traefik.http.routers.open-webui.service: open-webui
+      traefik.http.routers.open-webui.rule: Host(`open-webui.localhost`)
       traefik.http.services.open-webui.loadbalancer.server.port: 8080
     depends_on:
       traefik:
@@ -30,5 +25,7 @@ services:
     restart: unless-stopped
 
 networks:
-  ollama-net:
+  frontend:
+    external: true
+  backend:
     external: true

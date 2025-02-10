@@ -1,21 +1,21 @@
 services:
   traefik:
-    image: docker.io/traefik:v3.1.2
     container_name: traefik
+    image: docker.io/traefik:v3.3.2
     environment:
       - TZ=Europe/Berlin
     ports:
       - 80:80
-      - 8080:8080
       - 443:443
     networks:
-      - ollama-net
+      - frontend
+      - backend
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./certs:/certs
-      - ./config:/etc/traefik/conf
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./config/conf/:/etc/traefik/conf/
+      - ./config/certs/:/etc/traefik/certs/
       - ./log:/var/log
-      - ./traefik.yaml:/etc/traefik/traefik.yaml:ro
     healthcheck:
       test:
         - CMD
@@ -26,14 +26,15 @@ services:
       retries: 3
     labels:
       traefik.enable: true
-      traefik.docker.network: ollama-net
-      traefik.http.routers.traefik.rule: Host(`traefik.localhost`)
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.tls: true
-      traefik.http.routers.traefik.service: traefik
-      traefik.http.services.traefik.loadbalancer.server.port: 8080
+      traefik.http.routers.traefik.rule: Host(`traefik.localhost`)
+      traefik.http.routers.traefik.middlewares: traefik-auth@file
+      traefik.http.routers.traefik.service: api@internal
     restart: unless-stopped
 
 networks:
-  ollama-net:
+  frontend:
+    external: true
+  backend:
     external: true

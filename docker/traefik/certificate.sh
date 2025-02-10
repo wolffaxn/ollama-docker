@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-IFS=$'\n\t'
 
-CERT_PATH="./docker/traefik/certs"
 DOMAIN="localhost"
 
 openssl req \
@@ -11,9 +9,9 @@ openssl req \
   -sha256 \
   -days 3650 \
   -nodes \
-  -keyout "$CERT_PATH/$DOMAIN.key" \
-  -out "$CERT_PATH/$DOMAIN.crt" \
-  -subj "/CN=traefik-dev" \
+  -keyout "./config/certs/$DOMAIN.key" \
+  -out "./config/certs/$DOMAIN.crt" \
+  -subj "/CN=traefik" \
   -addext "subjectAltName=DNS:$DOMAIN, DNS:*.$DOMAIN"
 
 echo "New self-signed certificate created."

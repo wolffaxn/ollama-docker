@@ -37,10 +37,11 @@ Install the project dependencies included in the requirements.txt:
 
  ## ⚡ Quick Start with Docker
 
-Create a new docker network named ollama-net:
+Create the following new networks:
 
   ```sh
-  docker network create ollama-net 
+  docker network create backend
+  docker network create frontend 
   ```
 > [!NOTE]
 > The step above only needs to be done once.
@@ -80,7 +81,7 @@ All services can be accessed via the following links.
 - [Pipelines](https://pipelines.localhost)
 - [Promptfoo](https://promptfoo.localhost)
 - [Qdrant](https://qdrant.localhost/dashboard)
-- [Traefik](https://traefik.localhost)
+- [Traefik](https://traefik.localhost/dashboard/) (login: admin/admin)
 
 ## Ingestion and Retrieval
 

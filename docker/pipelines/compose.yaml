@@ -1,22 +1,20 @@
 services:
   pipelines:
-    image: docker.io/wolffaxn/pipelines:main
     container_name: pipelines
+    image: docker.io/wolffaxn/pipelines:main
     environment:
       - TZ=Europe/Berlin
-    ports:
-      - 9099:9099
+    # ports:
+    #   - 9099:9099
     networks:
-      - ollama-net
+      - backend
     volumes:
       - ./data:/app/pipelines
     labels:
       traefik.enable: true
-      traefik.docker.network: ollama-net
-      traefik.http.routers.pipelines.rule: Host(`pipelines.localhost`)
       traefik.http.routers.pipelines.entrypoints: websecure
       traefik.http.routers.pipelines.tls: true
-      traefik.http.routers.pipelines.service: pipelines
+      traefik.http.routers.pipelines.rule: Host(`pipelines.localhost`)
       traefik.http.services.pipelines.loadbalancer.server.port: 9099
     depends_on:
       traefik:
@@ -24,5 +22,5 @@ services:
     restart: unless-stopped
 
 networks:
-  ollama-net:
+  backend:
     external: true
