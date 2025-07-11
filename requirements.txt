@@ -1,5 +1,5 @@
-llama-index==0.12.43
-llama-index-core==0.12.43
+llama-index==0.12.48
+llama-index-core==0.12.48
 llama-index-embeddings-ollama==0.6.0
 llama-index-llms-ollama==0.6.2
 llama-index-storage-docstore-redis==0.3.0
