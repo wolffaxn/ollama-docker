@@ -5,6 +5,6 @@ llama-index-llms-ollama==0.7.0
 llama-index-storage-docstore-redis==0.4.0
 llama-index-vector-stores-qdrant==0.7.1
 
-ollama==0.5.1
+ollama==0.5.2
 python-dotenv==1.1.1
 qdrant-client==1.15.1
