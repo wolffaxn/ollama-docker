@@ -3,8 +3,8 @@ llama-index-core==0.14.25
 llama-index-embeddings-ollama==0.10.0
 llama-index-llms-ollama==0.11.0
 llama-index-storage-docstore-redis==0.6.0
-llama-index-vector-stores-qdrant==0.10.3
+llama-index-vector-stores-qdrant==0.10.4
 
 ollama==0.6.3
-python-dotenv==1.2.3
+python-dotenv==1.2.4
 qdrant-client==1.19.1
